@@ -20,6 +20,8 @@ class MainActivity : AppCompatActivity() {
     var operand = 0.0
     var operation : Operation = Operation.ADD
 
+    var userInTheMiddleOfIntroduction = true
+
     private var onOperationPressed : ((View) -> Unit)? = {
         val buttonPressed = it as? Button
         operation = when (buttonPressed?.text){
@@ -30,27 +32,37 @@ class MainActivity : AppCompatActivity() {
             else -> Operation.ADD
         }
         operand = binding.textViewDisplay.text.toString().toDouble()
+        userInTheMiddleOfIntroduction = false
     }
 
     private var onNumberPressed : ((View) -> Unit)? = {
         val buttonPressed = it as? Button
         val buttonText : String = buttonPressed?.text.toString()
         val displayText : String = binding.textViewDisplay.text.toString()
-        if (displayText == "0" ){
-            if (buttonText == "."){
-                binding.textViewDisplay.text = displayText + buttonText
-            }else{
-                binding.textViewDisplay.text = buttonText
-            }
-        }else{
-            if (buttonText == "."){
-                if (!displayText.contains(".")){
+
+        if (userInTheMiddleOfIntroduction) {
+            if (displayText == "0" ){
+                if (buttonText == "."){
                     binding.textViewDisplay.text = displayText + buttonText
+                }else{
+                    binding.textViewDisplay.text = buttonText
                 }
             }else{
-                binding.textViewDisplay.text = displayText + buttonText
+                if (buttonText == "."){
+                    if (!displayText.contains(".")){
+                        binding.textViewDisplay.text = displayText + buttonText
+                    }
+                }else{
+                    binding.textViewDisplay.text = displayText + buttonText
+                }
             }
+        }else{
+            binding.textViewDisplay.text = buttonText
+            userInTheMiddleOfIntroduction = true
         }
+
+
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,6 +88,21 @@ class MainActivity : AppCompatActivity() {
         binding.buttonMinus.setOnClickListener(onOperationPressed)
         binding.buttonMultiply.setOnClickListener(onOperationPressed)
 
+        binding.buttonEqual.setOnClickListener {
+
+            var result = when(operation){
+                Operation.ADD -> operand + binding.textViewDisplay.text.toString().toDouble()
+                Operation.SUBTRACT -> operand - binding.textViewDisplay.text.toString().toDouble()
+                Operation.MULTIPLY -> operand * binding.textViewDisplay.text.toString().toDouble()
+                Operation.DIVISION -> operand / binding.textViewDisplay.text.toString().toDouble()
+            }
+            binding.textViewDisplay.text = if ((result % 1.0) == 0.0){
+                result.toInt().toString()
+            }else{
+                result.toString()
+            }
+
+        }
     }
 
 }
