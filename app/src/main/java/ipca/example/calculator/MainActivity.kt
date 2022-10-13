@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding : ActivityMainBinding
 
-    var operand = 0.0
+    var operand : Double? = null
     var operation : Operation = Operation.ADD
 
     var userInTheMiddleOfIntroduction = true
@@ -91,10 +91,10 @@ class MainActivity : AppCompatActivity() {
         binding.buttonEqual.setOnClickListener {
 
             var result = when(operation){
-                Operation.ADD -> operand + binding.textViewDisplay.text.toString().toDouble()
-                Operation.SUBTRACT -> operand - binding.textViewDisplay.text.toString().toDouble()
-                Operation.MULTIPLY -> operand * binding.textViewDisplay.text.toString().toDouble()
-                Operation.DIVISION -> operand / binding.textViewDisplay.text.toString().toDouble()
+                Operation.ADD -> operand?:0.0 + binding.textViewDisplay.text.toString().toDouble()
+                Operation.SUBTRACT -> operand?:0.0 - binding.textViewDisplay.text.toString().toDouble()
+                Operation.MULTIPLY -> operand?:0.0 * binding.textViewDisplay.text.toString().toDouble()
+                Operation.DIVISION -> operand?:0.0 / binding.textViewDisplay.text.toString().toDouble()
             }
             binding.textViewDisplay.text = if ((result % 1.0) == 0.0){
                 result.toInt().toString()
