@@ -6,32 +6,26 @@ import android.view.View
 import android.widget.Button
 import ipca.example.calculator.databinding.ActivityMainBinding
 
-enum class Operation(val op : String) {
-    ADD("+") ,
-    SUBTRACT("-"),
-    MULTIPLY("*"),
-    DIVISION("/")
-}
+
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding : ActivityMainBinding
 
-    var operand : Double? = null
-    var operation : Operation = Operation.ADD
+    var calculatorBrain = CalculatorBrain()
 
     var userInTheMiddleOfIntroduction = true
 
     private var onOperationPressed : ((View) -> Unit)? = {
         val buttonPressed = it as? Button
-        operation = when (buttonPressed?.text){
+        calculatorBrain.operation = when (buttonPressed?.text){
             "+" -> Operation.ADD
             "-" -> Operation.SUBTRACT
             "*" -> Operation.MULTIPLY
             "/" -> Operation.DIVISION
             else -> Operation.ADD
         }
-        operand = binding.textViewDisplay.text.toString().toDouble()
+        calculatorBrain.operand = binding.textViewDisplay.text.toString().toDouble()
         userInTheMiddleOfIntroduction = false
     }
 
@@ -90,13 +84,9 @@ class MainActivity : AppCompatActivity() {
 
         binding.buttonEqual.setOnClickListener {
 
-            var result = when(operation){
-                Operation.ADD -> operand?:0.0 + binding.textViewDisplay.text.toString().toDouble()
-                Operation.SUBTRACT -> operand?:0.0 - binding.textViewDisplay.text.toString().toDouble()
-                Operation.MULTIPLY -> operand?:0.0 * binding.textViewDisplay.text.toString().toDouble()
-                Operation.DIVISION -> operand?:0.0 / binding.textViewDisplay.text.toString().toDouble()
-            }
-            binding.textViewDisplay.text = if ((result % 1.0) == 0.0){
+            val result = calculatorBrain.doOperation(binding.textViewDisplay.text.toString().toDouble())
+
+            binding.textViewDisplay.text = if ((result!! % 1.0) == 0.0){
                 result.toInt().toString()
             }else{
                 result.toString()
